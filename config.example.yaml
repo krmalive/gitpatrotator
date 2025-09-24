@@ -1,0 +1,109 @@
+# GitPATRotator Configuration Example
+# Copy this file to config.yaml and customize for your environment
+
+vault:
+  url: "https://vault.example.com"
+  token: "your-vault-token"  # or use VAULT_TOKEN env var
+  namespace: "your-namespace"  # Optional: Vault namespace (for Vault Enterprise)
+  mount_path: "secret"
+  verify_ssl: false  # Set to false for corporate Vault with self-signed certs
+
+tokens:
+  # GitHub App Installation Token (fully automated rotation)
+  - name: "github-app-myorg"
+    type: "github-app"
+    vault_path: "tokens/github/app-installation"  # Separate path for GitHub tokens
+    username: "myorg"  # Organization or user that installed the app
+    token_field: "gh-pat"  # Custom field name for GitHub token in Vault
+    github_app:
+      app_id: "123456"
+      private_key_path: "/path/to/github-app-private-key.pem"
+      installation_id: "12345678"
+      permissions:
+        metadata: "read"    # Start with minimal permissions
+        # Add more permissions as needed after testing:
+        # contents: "read"
+        # pull_requests: "write"
+        # issues: "write"
+    rotation_interval_days: 1  # Check daily for rotation (frequent checks needed)
+    max_age_days: 1            # Force rotation if stored token is 1 day old
+    # NOTE: GitHub App tokens expire in 1 hour (GitHub's limitation).
+    # We don't set token_validity_days because GitHub controls the expiry.
+    # We rotate daily to ensure fresh tokens are always available in Vault.
+
+  # GitLab Personal Access Token (fully automated rotation)
+  - name: "gitlab-prod"
+    type: "gitlab"
+    vault_path: "tokens/gitlab/prod"  # Separate path for GitLab tokens
+    gitlab_url: "https://gitlab.example.com"
+    username: "your-gitlab-username"
+    token_field: "gl-pat"      # Custom field name for GitLab token in Vault
+    rotation_interval_days: 15  # Rotate 15 days before expiry
+    max_age_days: 60           # Force rotation after 60 days
+    token_validity_days: 90    # New tokens valid for 90 days (optional, defaults to 30)
+    scopes:
+      - "api"
+      - "read_user"
+      - "read_repository"
+      - "write_repository"
+
+  # GitLab Development Environment Token
+  - name: "gitlab-dev"
+    type: "gitlab"
+    vault_path: "tokens/gitlab/dev"  # Separate path for dev environment
+    gitlab_url: "https://gitlab-dev.example.com"
+    username: "your-gitlab-dev-username"
+    token_field: "gl-pat"      # Field name for dev token
+    rotation_interval_days: 30  # Less frequent rotation for dev
+    max_age_days: 90           # Force rotation after 90 days
+    token_validity_days: 60    # Shorter validity for dev environment
+    scopes:
+      - "api"
+      - "read_user"
+      - "read_repository"
+
+  # GitLab CI/CD Service Account Token
+  - name: "gitlab-cicd"
+    type: "gitlab"
+    vault_path: "tokens/gitlab/cicd"  # Separate path for CI/CD
+    gitlab_url: "https://gitlab.example.com"
+    username: "cicd-service-account"
+    token_field: "cicd_token"  # Custom field name in Vault
+    rotation_interval_days: 7   # Frequent rotation for CI/CD security
+    max_age_days: 30           # Short max age for service accounts
+    token_validity_days: 45    # Longer validity to avoid CI/CD disruption
+    scopes:
+      - "api"
+      - "read_repository"
+      - "write_repository"
+      - "read_registry"
+      - "write_registry"
+
+# Configuration Options:
+# - rotation_interval_days: How often to check for rotation (default: 30)
+# - max_age_days: Maximum token age before forced rotation
+# - token_validity_days: How long new tokens remain valid (default: 30)
+#   * This sets the expiration date for newly created tokens
+#   * Should be longer than rotation_interval_days to allow overlap
+#   * If not specified, defaults to 30 days
+#   * NOTE: GitHub App tokens ignore this setting - they always expire in 1 hour (GitHub's rule)
+#
+# GitHub App Token Behavior:
+# - GitHub App tokens ALWAYS expire in 1 hour (hardcoded by GitHub)
+# - token_validity_days setting is ignored for GitHub App tokens
+# - rotation_interval_days should be frequent (daily) to ensure fresh tokens
+# - The 1-hour expiry is enforced by GitHub's API, not GitPATRotator
+# - Start with minimal permissions (metadata: read) then add more as needed
+#
+# Important Best Practices:
+# - Use SEPARATE vault_paths for different token types to avoid token_id conflicts
+# - GitHub and GitLab tokens should never share the same vault_path
+# - Each token should have a unique token_field name (e.g., "gh-pat", "gl-pat")
+# - For corporate Vault: set verify_ssl: false for self-signed certificates
+# - Grant GitHub App permissions incrementally - start minimal, add as needed
+#
+# Multiple Token Support:
+# - You can configure multiple tokens of the same or different types
+# - Each token must have a unique 'name' and 'vault_path'
+# - Different tokens can have different rotation schedules and settings
+# - Tokens can point to different GitLab instances or use different usernames
