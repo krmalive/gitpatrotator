@@ -47,6 +47,8 @@ class GitPATRotatorGroup(click.Group):
     def get_help(self, ctx):
         """Override to display logo before help."""
         display_logo()
+        click.echo("https://github.com/krmalive/gitpatrotator")
+        click.echo()
         return super().get_help(ctx)
 
 
@@ -56,7 +58,7 @@ def version_callback(ctx, param, value):
         return
     display_logo()
     click.echo(f"Version: {__version__}")
-    click.echo("https://github.com/your-org/gitpatrotator")
+    click.echo("https://github.com/krmalive/gitpatrotator")
     click.echo()
     ctx.exit()
 
