@@ -23,9 +23,6 @@ A cross-platform Python application for automatically rotating GitLab and GitHub
 ```bash
 # Install GitPATRotator directly from source
 pip install -e .
-
-# Or install from PyPI (when available)
-pip install gitpatrotator
 ```
 
 After installation, you can use `gitpatrotator` directly as a command-line tool with a beautiful ASCII logo.
@@ -176,6 +173,39 @@ python -m gitpatrotator <command>
 - `GITLAB_TOKEN`: GitLab token for API access (temporary during rotation)
 
 ## Troubleshooting
+
+### Installation Issues
+
+#### Linux Installation Problems
+
+If you encounter this error on Linux systems:
+```
+ERROR: File "setup.py" not found. Directory cannot be installed in editable mode
+(A "pyproject.toml" file was found, but editable mode currently requires a setup.py based build.)
+```
+
+This happens on older Linux systems with outdated pip versions. **Solution**:
+
+```bash
+# 1. Upgrade pip to latest version
+pip install --upgrade pip
+
+# 2. Add pip's local bin directory to PATH (if pip was installed to ~/.local/bin)
+export PATH="$HOME/.local/bin:$PATH"
+
+# 3. Install modern build tools
+pip install build
+
+# 4. Now install GitPATRotator
+pip install -e .
+```
+
+**Note**: The warning about `~/.local/bin` not being on PATH is normal. Adding it to PATH ensures you use the upgraded pip version.
+
+To make the PATH change permanent, add this line to your `~/.bashrc` or `~/.profile`:
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
 
 ### GitHub App Issues
 - **Installation ID**: Find it in the URL after installing: `github.com/settings/installations/{ID}`
