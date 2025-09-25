@@ -6,13 +6,15 @@ build-backend = "setuptools.build_meta"
 name = "gitpatrotator"
 version = "0.1.0"
 description = "Cross-platform tool for rotating GitHub/GitLab PATs stored in HashiCorp Vault"
-authors = [{name = "GitPATRotator Team"}]
+authors = [{name = "Karthik Radhakrishnan", email = "karthik.mgm@gmail.com"}]  
 license = {text = "MIT"}
 readme = "README.md"
 requires-python = ">=3.8"
+keywords = ["github", "gitlab", "vault", "token", "rotation", "automation", "devops", "security"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",  # Added
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
@@ -24,6 +26,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: System :: Systems Administration",
     "Topic :: Security",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",  # Added
 ]
 dependencies = [
     "hvac>=1.2.1",
@@ -49,8 +52,10 @@ dev = [
 gitpatrotator = "gitpatrotator.cli:cli"
 
 [project.urls]
-Homepage = "https://github.com/yourusername/gitpatrotator"
-Issues = "https://github.com/yourusername/gitpatrotator/issues"
+Homepage = "https://github.com/krmalive/gitpatrotator"
+Issues = "https://github.com/krmalive/gitpatrotator/issues"
+Repository = "https://github.com/krmalive/gitpatrotator.git"
+Documentation = "https://github.com/krmalive/gitpatrotator#readme"
 
 [tool.setuptools.packages.find]
 where = ["."]
